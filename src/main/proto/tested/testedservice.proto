@@ -1,0 +1,80 @@
+syntax = "proto3";
+
+option java_package = "com.rdittmann.nodememorytest.grpc.tested.generated";
+option java_outer_classname = "GrpcTestedService";
+
+package service;
+
+service TestedService {
+    rpc GetData (DataRequest) returns (DataResponse);
+}
+
+message DataRequest {
+    string parameter1 = 1;
+    string parameter2 = 2;
+}
+
+message DataResponse {
+    Data data = 1;
+    ResponseState state = 2;
+}
+
+message Data {
+    Acc acc = 1;
+    Acc2 acc2 = 2;
+    Acc3 acc3 = 3;
+    Acc4 acc4 = 4;
+}
+
+message Acc {
+    string id = 1;
+    string id2 = 2;
+    string id3 = 3;
+    Status status = 4;
+    repeated string strs = 5;
+    repeated KeyValuePair properties = 6;
+    uint32 number = 7;
+    string id4 = 8;
+}
+
+message Acc2 {
+    string id = 1;
+    string parameter1 = 2;
+    string text = 3;
+    bool top = 4;
+}
+
+message Acc3 {
+    string id = 1;
+    string acc2Id = 2;
+    string text = 3;
+    bool top = 4;
+    repeated KeyValuePair acc3Properties = 5;
+}
+
+message Acc4 {
+    string id = 1;
+    string text = 2;
+    string id2 = 3;
+    bool isSet = 4;
+    string id3 = 5;
+    string languageCode = 6;
+    repeated KeyValuePair acc4Properties = 7;
+    string parameter1 = 8;
+    string acc4GroupId = 9;
+    string iAcc4Id = 10;
+}
+
+message KeyValuePair {
+    string key = 1;
+    string value = 2;
+}
+
+enum ResponseState {
+    OK = 0;
+    GENERAL_ERROR = 99;
+}
+
+enum Status {
+    ACTIVE = 0;
+}
