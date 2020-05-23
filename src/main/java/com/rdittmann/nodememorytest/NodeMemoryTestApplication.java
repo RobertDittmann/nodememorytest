@@ -9,6 +9,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -19,12 +20,16 @@ public class NodeMemoryTestApplication {
 
     private static final int sleepTime = 600000; // 10 minutes
 
+    private static String[] args;
+
     @SneakyThrows
     public static void main(String[] args) {
         Thread.setDefaultUncaughtExceptionHandler(NodeMemoryTestApplication::uncaughtExceptionHandler);
 
         val applicationContext = SpringApplication.run(NodeMemoryTestApplication.class, args);
         val testedService = applicationContext.getBeanFactory().getBean(TestedService.class);
+
+        NodeMemoryTestApplication.args = args;
 
         // start test
         ExecutorService executorService = Executors.newFixedThreadPool(1000);
@@ -57,7 +62,11 @@ public class NodeMemoryTestApplication {
             int finalI = i;
             executorService.submit(() -> {
                 for (int j = 0; j < Integer.MAX_VALUE; j++) {
-                    testedService.getData("parameter" + finalI, "parameter" + finalI);
+                    if (Objects.nonNull(args) && args[0].toLowerCase().equals("rest")) {
+                        testedService.restCall(String.valueOf(finalI), String.valueOf(finalI));
+                    } else {
+                        testedService.getData("parameter" + finalI, "parameter" + finalI);
+                    }
                 }
             });
         }
