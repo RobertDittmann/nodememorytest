@@ -10,16 +10,25 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 @Component
 public class TestedService {
 
+    public static AtomicInteger okRequests = new AtomicInteger(0);
+    public static AtomicInteger failedRequests = new AtomicInteger(0);
+
     @Autowired
     private GrpcTestedClient testedClient;
 
     public GrpcTestedService.Data getData(String param1, String param2) {
-        return testedClient.getData(param1, param2);
+        if (testedClient.getData(param1, param2).equals(GrpcTestedService.ResponseState.OK)) {
+            okRequests.incrementAndGet();
+        } else {
+            failedRequests.incrementAndGet();
+        }
+        return null;
     }
 
 
@@ -33,6 +42,9 @@ public class TestedService {
             int status = con.getResponseCode();
             if (status != 200) {
                 log.error("returned status: " + status);
+                failedRequests.incrementAndGet();
+            } else {
+                okRequests.incrementAndGet();
             }
             BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
             String inputLine;
@@ -45,7 +57,7 @@ public class TestedService {
 
 
         } catch (Exception ex) {
-            log.error(ex.getMessage());
+            failedRequests.incrementAndGet();
         }
 
         return null;
